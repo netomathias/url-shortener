@@ -1,12 +1,11 @@
 package handlers
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
-	"url-shortener/models"
-	"url-shortener/repositories"
+	"url-shortener/internal/models"
+	"url-shortener/internal/repositories"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/exp/rand"
 )
 
 
@@ -27,13 +26,16 @@ func (r *UrlShortenerHandler) ShortenURL(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"error": err.Error()})
 	}
 
-	hash := sha256.New()
-	hash.Write([]byte(urlShortenerModel.OriginalUrl))
-	alias := base64.URLEncoding.EncodeToString(hash.Sum(nil))[:4]
+	for {
+		alias := generateAlias()
+		_, err := r.UrlRepo.FindByAlias(alias)
+		if err != nil {
+			urlShortenerModel.Alias = alias
+			urlShortenerModel.ShortUrl = "http://localhost:3000/" + alias
+			break
+		}
+	}
 
-	urlShortenerModel.Alias = alias
-	urlShortenerModel.ShortenedUrl = "http://localhost:3000/" + alias
-	
 	err := r.UrlRepo.Save(urlShortenerModel)
 	if err != nil {
 		return c.JSON(fiber.Map{"error": err.Error()})
@@ -59,5 +61,17 @@ func (r *UrlShortenerHandler) ResolveURL(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"error": err.Error()})
 	}
 	
-	return c.Redirect(result.OriginalUrl, 301)
+	return c.Redirect(result.LongUrl, 301)
+}
+
+func generateAlias() string {
+	const aliasLength = 4
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	b := make([]byte, aliasLength)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+
+	return string(b)
 }

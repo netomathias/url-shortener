@@ -1,0 +1,9 @@
+services:
+  urlshortener:
+    build: .
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_URI=mongodb+srv://admin:X219IZGDmDHMrXXp@estudos.vant8hw.mongodb.net/
+    ports:
+      - 3000:3000

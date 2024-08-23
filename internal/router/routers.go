@@ -2,9 +2,9 @@ package router
 
 import (
 	"os"
-	"url-shortener/database"
-	"url-shortener/handlers"
-	"url-shortener/repositories"
+	"url-shortener/internal/database"
+	"url-shortener/internal/handlers"
+	"url-shortener/internal/repositories"
 
 	"github.com/gofiber/fiber/v2"
 )
