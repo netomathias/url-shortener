@@ -1,4 +1,4 @@
-POST http://localhost:3000
+POST https://url-shortener-t1vs.onrender.com
 
 { 
     "long_url": "https://www.reclameaqui.com.br/empresa/itau/"

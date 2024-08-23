@@ -7,6 +7,7 @@ import (
 	"url-shortener/internal/repositories"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 )
 
 func InitRoutes(app *fiber.App) {
@@ -15,4 +16,5 @@ func InitRoutes(app *fiber.App) {
 	handlers := handlers.NewUrlShortenerHandler(repository)
 	app.Get("/:alias", handlers.ResolveURL)
 	app.Post("/", handlers.ShortenURL)
+	app.Get("/api/metrics", monitor.New())
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"os"
 	"url-shortener/internal/models"
 	"url-shortener/internal/repositories"
 
@@ -31,7 +32,7 @@ func (r *UrlShortenerHandler) ShortenURL(c *fiber.Ctx) error {
 		_, err := r.UrlRepo.FindByAlias(alias)
 		if err != nil {
 			urlShortenerModel.Alias = alias
-			urlShortenerModel.ShortUrl = "http://localhost:3000/" + alias
+			urlShortenerModel.ShortUrl = os.Getenv("HOSTNAME") + alias
 			break
 		}
 	}
@@ -42,7 +43,7 @@ func (r *UrlShortenerHandler) ShortenURL(c *fiber.Ctx) error {
 		
 	}
 
-	return c.JSON(fiber.Map{"message": "success"})
+	return c.JSON(fiber.Map{"short_url": urlShortenerModel.ShortUrl})
 }
 
 func (r *UrlShortenerHandler) ResolveURL(c *fiber.Ctx) error {
